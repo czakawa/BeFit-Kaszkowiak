@@ -1,0 +1,22 @@
+﻿@model BeFit_Kaszkowiak.Models.Sesja
+
+@{
+    ViewData["Title"] = "Usuń sesję";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<h4>Czy na pewno chcesz usunąć tę sesję?</h4>
+
+<div>
+    <strong>@Model.Tytul</strong>
+    <p>@Model.Opis</p>
+    <p>Data: @Model.Data.ToString("yyyy-MM-dd")</p>
+</div>
+
+<form asp-action="Delete" method="post">
+    @Html.AntiForgeryToken()
+    <input type="hidden" asp-for="Id" />
+    <button type="submit" class="btn btn-danger">Usuń</button>
+    <a asp-action="Index" class="btn btn-secondary">Anuluj</a>
+</form>

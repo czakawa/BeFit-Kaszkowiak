@@ -1,0 +1,29 @@
+﻿@model IEnumerable<BeFit_Kaszkowiak.Models.ViewModels.StatystykaTypuViewModel>
+
+@{
+    ViewData["Title"] = "Statystyki";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Typ</th>
+            <th>Ilość ćwiczeń</th>
+            <th>Łączny czas (s)</th>
+            <th>Średnie powtórzenia</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var r in Model)
+        {
+            <tr>
+                <td>@r.NazwaTypu</td>
+                <td>@r.IloscCwiczen</td>
+                <td>@r.LacznyCzasSek</td>
+                <td>@String.Format("{0:0.##}", r.SredniePowtorzenia)</td>
+            </tr>
+        }
+    </tbody>
+</table>

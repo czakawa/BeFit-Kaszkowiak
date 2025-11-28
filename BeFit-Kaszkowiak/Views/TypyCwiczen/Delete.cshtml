@@ -1,0 +1,10 @@
+﻿@model BeFit_Kaszkowiak.Models.TypCwiczenia
+
+<h4>Czy na pewno usunąć?</h4>
+
+<form asp-action="Delete" method="post">
+    @Html.AntiForgeryToken()
+    <input type="hidden" asp-for="Id" />
+    <button type="submit" class="btn btn-danger">Usuń</button>
+    <a asp-action="Index" class="btn btn-secondary">Anuluj</a>
+</form>

@@ -1,0 +1,61 @@
+﻿@model IEnumerable<BeFit_Kaszkowiak.Models.UserWithRolesViewModel>
+
+@{
+    ViewData["Title"] = "Panel administracyjny";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success">@TempData["Success"]</div>
+}
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">@TempData["Error"]</div>
+}
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Użytkownik</th>
+            <th>Email</th>
+            <th>Role</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model == null || !Model.Any())
+{
+    <p>Brak użytkowników.</p>
+}
+else
+{
+        @foreach (var u in Model)
+        {
+            <tr>
+                <td>@u.UserName</td>
+                <td>@u.Email</td>
+                <td>@string.Join(", ", u.Roles)</td>
+                <td>
+                    <a asp-action="ManageRoles" asp-route-id="@u.Id" class="btn btn-sm btn-outline-primary">Zarządzaj rolami</a>
+                    <form asp-action="DeleteUser" method="post" style="display:inline" onsubmit="return confirm('Usunąć użytkownika?');">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="id" value="@u.Id" />
+                        <button class="btn btn-sm btn-danger">Usuń</button>
+                    </form>
+                </td>
+            </tr>
+        }
+        }
+    </tbody>
+</table>
+
+<h4>Utwórz nową rolę</h4>
+<form asp-action="CreateRole" method="post" class="form-inline">
+    @Html.AntiForgeryToken()
+    <div class="mb-2">
+        <input name="roleName" class="form-control" placeholder="Nazwa roli" />
+        <button class="btn btn-primary">Utwórz</button>
+    </div>
+</form>

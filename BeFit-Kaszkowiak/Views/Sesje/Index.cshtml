@@ -1,0 +1,44 @@
+﻿@model IEnumerable<BeFit_Kaszkowiak.Models.Sesja>
+
+@{
+    ViewData["Title"] = "Moje sesje";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<p>
+    <a asp-action="Create" class="btn btn-primary">Nowa sesja</a>
+</p>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Tytuł</th>
+            <th>Data</th>
+            <th>Opis</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (!Model?.Any() ?? true)
+        {
+            <tr><td colspan="4">Brak sesji.</td></tr>
+        }
+        else
+        {
+            foreach (var item in Model)
+            {
+                <tr>
+                    <td>@item.Tytul</td>
+                    <td>@item.Data.ToString("yyyy-MM-dd")</td>
+                    <td>@item.Opis</td>
+                    <td>
+                        <a asp-action="Details" asp-route-id="@item.Id">Szczegóły</a> |
+                        <a asp-action="Edit" asp-route-id="@item.Id">Edytuj</a> |
+                        <a asp-action="Delete" asp-route-id="@item.Id">Usuń</a>
+                    </td>
+                </tr>
+            }
+        }
+    </tbody>
+</table>

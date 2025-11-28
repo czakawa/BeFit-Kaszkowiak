@@ -1,0 +1,35 @@
+﻿@model IEnumerable<BeFit_Kaszkowiak.Models.TypCwiczenia>
+
+@{
+    ViewData["Title"] = "Typy ćwiczeń";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<p>
+    <a asp-action="Create" class="btn btn-primary">Dodaj nowy typ</a>
+</p>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Nazwa</th>
+            <th>Opis</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var t in Model)
+        {
+            <tr>
+                <td>@t.Nazwa</td>
+                <td>@t.Opis</td>
+                <td>
+                    <a asp-action="Details" asp-route-id="@t.Id">Szczegóły</a> |
+                    <a asp-action="Edit" asp-route-id="@t.Id">Edytuj</a> |
+                    <a asp-action="Delete" asp-route-id="@t.Id">Usuń</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

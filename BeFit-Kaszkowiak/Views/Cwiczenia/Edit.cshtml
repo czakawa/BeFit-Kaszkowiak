@@ -1,0 +1,57 @@
+﻿@model BeFit_Kaszkowiak.Models.Cwiczenie
+@using Microsoft.AspNetCore.Mvc.Rendering
+
+@{
+    ViewData["Title"] = "Edytuj ćwiczenie";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<form asp-action="Edit" method="post">
+    @Html.AntiForgeryToken()
+    <input type="hidden" asp-for="Id" />
+
+    <div class="form-group mb-2">
+        <label asp-for="Nazwa" class="form-label"></label>
+        <input asp-for="Nazwa" class="form-control" />
+        <span asp-validation-for="Nazwa" class="text-danger"></span>
+    </div>
+
+    <div class="form-group mb-2">
+        <label asp-for="TypCwiczeniaId" class="form-label"></label>
+        <select asp-for="TypCwiczeniaId" asp-items="@(ViewData["TypCwiczeniaId"] as SelectList)" class="form-control"></select>
+        <span asp-validation-for="TypCwiczeniaId" class="text-danger"></span>
+    </div>
+
+    <div class="form-group mb-2">
+        <label asp-for="SesjaId" class="form-label"></label>
+        <select asp-for="SesjaId" asp-items="@(ViewData["SesjaId"] as SelectList)" class="form-control"></select>
+        <span asp-validation-for="SesjaId" class="text-danger"></span>
+    </div>
+
+    <div class="form-group mb-2">
+        <label asp-for="CzasTrwaniaSek" class="form-label"></label>
+        <input asp-for="CzasTrwaniaSek" class="form-control" />
+        <span asp-validation-for="CzasTrwaniaSek" class="text-danger"></span>
+    </div>
+
+    <div class="form-group mb-2">
+        <label asp-for="Powtorzenia" class="form-label"></label>
+        <input asp-for="Powtorzenia" class="form-control" />
+        <span asp-validation-for="Powtorzenia" class="text-danger"></span>
+    </div>
+
+    <div class="form-group mb-3">
+        <label asp-for="Opis" class="form-label"></label>
+        <textarea asp-for="Opis" class="form-control"></textarea>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Zapisz</button>
+    <a asp-action="Index" class="btn btn-secondary">Anuluj</a>
+</form>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

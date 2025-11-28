@@ -1,0 +1,48 @@
+﻿@model IEnumerable<BeFit_Kaszkowiak.Models.Cwiczenie>
+
+@{
+    ViewData["Title"] = "Ćwiczenia";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<p>
+    <a asp-action="Create" class="btn btn-primary">Dodaj ćwiczenie</a>
+</p>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Nazwa</th>
+            <th>Typ</th>
+            <th>Sesja</th>
+            <th>Czas (s)</th>
+            <th>Powtórzenia</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (!Model?.Any() ?? true)
+        {
+            <tr><td colspan="6">Brak rekordów.</td></tr>
+        }
+        else
+        {
+            foreach (var item in Model)
+            {
+                <tr>
+                    <td>@item.Nazwa</td>
+                    <td>@item.TypCwiczenia?.Nazwa</td>
+                    <td>@item.Sesja?.Tytul</td>
+                    <td>@item.CzasTrwaniaSek</td>
+                    <td>@item.Powtorzenia</td>
+                    <td>
+                        <a asp-action="Details" asp-route-id="@item.Id">Szczegóły</a> |
+                        <a asp-action="Edit" asp-route-id="@item.Id">Edytuj</a> |
+                        <a asp-action="Delete" asp-route-id="@item.Id">Usuń</a>
+                    </td>
+                </tr>
+            }
+        }
+    </tbody>
+</table>

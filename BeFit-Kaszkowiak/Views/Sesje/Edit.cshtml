@@ -1,0 +1,39 @@
+﻿@model BeFit_Kaszkowiak.Models.Sesja
+
+@{
+    ViewData["Title"] = "Edytuj sesję";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<form asp-action="Edit" method="post">
+    @Html.AntiForgeryToken()
+    <input type="hidden" asp-for="Id" />
+
+    <div class="mb-3">
+        <label asp-for="Tytul" class="form-label"></label>
+        <input asp-for="Tytul" class="form-control" />
+        <span asp-validation-for="Tytul" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Data" class="form-label"></label>
+        <input asp-for="Data" type="date" class="form-control" />
+        <span asp-validation-for="Data" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Opis" class="form-label"></label>
+        <textarea asp-for="Opis" class="form-control"></textarea>
+        <span asp-validation-for="Opis" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Zapisz</button>
+    <a asp-action="Index" class="btn btn-secondary">Anuluj</a>
+</form>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
