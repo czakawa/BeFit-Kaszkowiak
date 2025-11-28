@@ -1,26 +1,31 @@
 ﻿@model IEnumerable<BeFit_Kaszkowiak.Models.Sesja>
 
 @{
-    ViewData["Title"] = "Moje sesje";
+    ViewData["Title"] = "Twoje sesje";
 }
 
 <h1>@ViewData["Title"]</h1>
 
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success">@TempData["Success"]</div>
+}
+
 <p>
-    <a asp-action="Create" class="btn btn-primary">Nowa sesja</a>
+    <a asp-action="Create" class="btn btn-primary">Dodaj nową sesję</a>
 </p>
 
 <table class="table table-striped">
     <thead>
         <tr>
-            <th>Tytuł</th>
-            <th>Data</th>
-            <th>Opis</th>
-            <th></th>
+            <th>@Html.DisplayNameFor(model => model.First().Tytul)</th>
+            <th>@Html.DisplayNameFor(model => model.First().DataRozpoczecia)</th>
+            <th>@Html.DisplayNameFor(model => model.First().DataZakonczenia)</th>
+            <th>@Html.DisplayName("Opcje")</th>
         </tr>
     </thead>
     <tbody>
-        @if (!Model?.Any() ?? true)
+        @if (Model == null || !Model.Any())
         {
             <tr><td colspan="4">Brak sesji.</td></tr>
         }
@@ -30,12 +35,12 @@
             {
                 <tr>
                     <td>@item.Tytul</td>
-                    <td>@item.Data.ToString("yyyy-MM-dd")</td>
-                    <td>@item.Opis</td>
+                    <td>@item.DataRozpoczecia.ToString("g")</td>
+                    <td>@(item.DataZakonczenia.HasValue? item.DataZakonczenia.Value.ToString("g") : "—")</td>
                     <td>
-                        <a asp-action="Details" asp-route-id="@item.Id">Szczegóły</a> |
-                        <a asp-action="Edit" asp-route-id="@item.Id">Edytuj</a> |
-                        <a asp-action="Delete" asp-route-id="@item.Id">Usuń</a>
+                        <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-outline-primary">Szczegóły</a>
+                        <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-secondary">Edytuj</a>
+                        <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-outline-danger">Usuń</a>
                     </td>
                 </tr>
             }

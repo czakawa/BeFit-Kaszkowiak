@@ -6,18 +6,24 @@
 
 <h1>@ViewData["Title"]</h1>
 
-<dl class="row">
-    <dt class="col-sm-2">Tytuł</dt>
-    <dd class="col-sm-10">@Model.Tytul</dd>
+<div>
+    <dl class="row">
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.Tytul)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(m => m.Tytul)</dd>
 
-    <dt class="col-sm-2">Data</dt>
-    <dd class="col-sm-10">@Model.Data.ToString("yyyy-MM-dd")</dd>
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.DataRozpoczecia)</dt>
+        <dd class="col-sm-9">@Model.DataRozpoczecia.ToString("g")</dd>
 
-    <dt class="col-sm-2">Opis</dt>
-    <dd class="col-sm-10">@Model.Opis</dd>
-</dl>
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.DataZakonczenia)</dt>
+        <dd class="col-sm-9">@((Model.DataZakonczenia.HasValue) ? Model.DataZakonczenia.Value.ToString("g") : "—")</dd>
+
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.Opis)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(m => m.Opis)</dd>
+    </dl>
+</div>
 
 <p>
     <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary">Edytuj</a>
-    <a asp-action="Index" class="btn btn-secondary">Powrót</a>
+    <a asp-action="Index" class="btn btn-secondary">Powrót do listy</a>
+    <a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger">Usuń</a>
 </p>

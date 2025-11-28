@@ -1,4 +1,6 @@
+using System;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace BeFit_Kaszkowiak.Models
 {
@@ -6,20 +8,24 @@ namespace BeFit_Kaszkowiak.Models
     {
         public int Id { get; set; }
 
-        [Required(ErrorMessage = "Tytu≥ jest wymagany")]
-        [Display(Name = "Tytu≥")]
-        public string Tytul { get; set; }
+        [Required(ErrorMessage = "Tytu≈Ç jest wymagany.")]
+        [StringLength(150)]
+        [Display(Name = "Tytu≈Ç sesji")]
+        public string Tytul { get; set; } = string.Empty;
 
-        [DataType(DataType.Date)]
-        [Display(Name = "Data")]
-        public DateTime Data { get; set; }
-
+        [StringLength(1000)]
         [Display(Name = "Opis")]
-        public string Opis { get; set; }
+        public string? Opis { get; set; }
 
-        // w≥aúciciel
-        public string UserId { get; set; }
+        // <-- mapujemy property DataRozpoczecia do kolumny 'Data' w bazie
+        [Column("Data")]
+        [Display(Name = "Data rozpoczƒôcia")]
+        public DateTime DataRozpoczecia { get; set; }
 
-        public ICollection<Cwiczenie> Cwiczenia { get; set; }
+        [Display(Name = "Data zako≈Ñczenia")]
+        public DateTime? DataZakonczenia { get; set; }
+
+        // w≈Ça≈õciciel
+        public string? UserId { get; set; }
     }
 }

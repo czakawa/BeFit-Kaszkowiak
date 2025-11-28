@@ -2,11 +2,11 @@ using System;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using BeFit_Kaszkowiak.Data;
+using BeFit_Kaszkowiak.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using BeFit_Kaszkowiak.Data;
-using BeFit_Kaszkowiak.Models;
 using Microsoft.Extensions.Logging;
 
 namespace BeFit_Kaszkowiak.Controllers
@@ -27,56 +27,58 @@ namespace BeFit_Kaszkowiak.Controllers
         public async Task<IActionResult> Index()
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var list = await _context.Sesje
-                        .Where(s => s.UserId == userId)
-                        .OrderByDescending(s => s.Data)
-                        .ToListAsync();
-            return View(list);
+            var lista = await _context.Sesje
+                .Where(s => s.UserId == userId)
+                .OrderByDescending(s => s.DataRozpoczecia) // jeÅ›li w modelu pole ma innÄ… nazwÄ™, dopasuj
+                .ToListAsync();
+
+            return View(lista);
         }
 
         // GET: Sesje/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null) return NotFound();
+
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var sesja = await _context.Sesje
-                        .FirstOrDefaultAsync(s => s.Id == id && s.UserId == userId);
+                .AsNoTracking()
+                .FirstOrDefaultAsync(s => s.Id == id && s.UserId == userId);
+
             if (sesja == null) return NotFound();
+
             return View(sesja);
         }
 
         // GET: Sesje/Create
         public IActionResult Create()
         {
-            return View();
+            var model = new Sesja
+            {
+                DataRozpoczecia = DateTime.Now
+            };
+            return View(model);
         }
 
         // POST: Sesje/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(Sesja model)
+        public async Task<IActionResult> Create([Bind("Tytul,Opis,DataRozpoczecia,DataZakonczenia")] Sesja model)
         {
-            // przypisz UserId natychmiast, zanim sprawdzimy ModelState — 
-            // dziêki temu walidacja i zapis bêd¹ widzieæ w³aœciciela
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (string.IsNullOrEmpty(userId))
             {
-                // nie powinno siê zdarzyæ (Authorize), ale wy³apujemy
-                ModelState.AddModelError(string.Empty, "U¿ytkownik nie jest zalogowany.");
-                return View(model);
-            }
-            model.UserId = userId;
-
-            // Serwerowa walidacja
-            if (string.IsNullOrWhiteSpace(model.Tytul))
-            {
-                ModelState.AddModelError(nameof(model.Tytul), "Tytu³ jest wymagany.");
+                _logger.LogWarning("Create: brak userId (uÅ¼ytkownik nie zalogowany?)");
+                return Forbid();
             }
 
-            // Ustaw domyœln¹ datê jeœli u¿ytkownik jej nie poda
-            if (model.Data == default(DateTime))
+            // JeÅ›li klient nie przesÅ‚aÅ‚ daty - ustaw bieÅ¼Ä…cÄ…
+            if (model.DataRozpoczecia == default) model.DataRozpoczecia = DateTime.Now;
+
+            // Walidacja dat
+            if (model.DataZakonczenia.HasValue && model.DataZakonczenia.Value < model.DataRozpoczecia)
             {
-                model.Data = DateTime.Today;
+                ModelState.AddModelError(nameof(model.DataZakonczenia), "Data zakoÅ„czenia nie moÅ¼e byÄ‡ wczeÅ›niejsza niÅ¼ data rozpoczÄ™cia.");
             }
 
             if (!ModelState.IsValid)
@@ -86,15 +88,23 @@ namespace BeFit_Kaszkowiak.Controllers
 
             try
             {
+                model.UserId = userId;
                 _context.Sesje.Add(model);
                 await _context.SaveChangesAsync();
-                TempData["Success"] = "Sesja zapisana.";
+                TempData["Success"] = "Sesja zostaÅ‚a zapisana.";
                 return RedirectToAction(nameof(Index));
+            }
+            catch (DbUpdateException dbEx)
+            {
+                var inner = dbEx.GetBaseException()?.Message ?? dbEx.Message;
+                _logger.LogError(dbEx, "BÅ‚Ä…d DB przy zapisie Sesji: {Message}", inner);
+                ModelState.AddModelError(string.Empty, "BÅ‚Ä…d zapisu: " + inner);
+                return View(model);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "B³¹d zapisu sesji Create");
-                ModelState.AddModelError(string.Empty, "Wyst¹pi³ b³¹d przy zapisie. Spróbuj ponownie.");
+                _logger.LogError(ex, "Niezidentyfikowany bÅ‚Ä…d przy zapisie Sesji");
+                ModelState.AddModelError(string.Empty, "BÅ‚Ä…d zapisu: " + ex.Message);
                 return View(model);
             }
         }
@@ -103,51 +113,68 @@ namespace BeFit_Kaszkowiak.Controllers
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null) return NotFound();
+
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var sesja = await _context.Sesje
-                        .AsNoTracking()
-                        .FirstOrDefaultAsync(s => s.Id == id && s.UserId == userId);
+                .AsNoTracking()
+                .FirstOrDefaultAsync(s => s.Id == id && s.UserId == userId);
+
             if (sesja == null) return NotFound();
+
             return View(sesja);
         }
 
         // POST: Sesje/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, Sesja model)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Tytul,Opis,DataRozpoczecia,DataZakonczenia")] Sesja model)
         {
             if (id != model.Id) return NotFound();
 
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var existing = await _context.Sesje.AsNoTracking().FirstOrDefaultAsync(s => s.Id == id && s.UserId == userId);
+            if (string.IsNullOrEmpty(userId)) return Forbid();
+
+            // SprawdÅº, czy rekord naleÅ¼y do uÅ¼ytkownika
+            var existing = await _context.Sesje
+                .AsNoTracking()
+                .FirstOrDefaultAsync(s => s.Id == id && s.UserId == userId);
+
             if (existing == null) return NotFound();
 
-            // zachowaj UserId - zawsze w³aœcicielem pozostaje ten user
-            model.UserId = userId;
+            if (model.DataRozpoczecia == default) model.DataRozpoczecia = existing.DataRozpoczecia;
 
-            if (!ModelState.IsValid)
+            if (model.DataZakonczenia.HasValue && model.DataZakonczenia.Value < model.DataRozpoczecia)
             {
-                return View(model);
+                ModelState.AddModelError(nameof(model.DataZakonczenia), "Data zakoÅ„czenia nie moÅ¼e byÄ‡ wczeÅ›niejsza niÅ¼ data rozpoczÄ™cia.");
             }
+
+            if (!ModelState.IsValid) return View(model);
 
             try
             {
+                model.UserId = userId; // zabezpieczenie - nie pozwalamy zmieniÄ‡ wÅ‚aÅ›ciciela
                 _context.Update(model);
                 await _context.SaveChangesAsync();
-                TempData["Success"] = "Zaktualizowano sesjê.";
+                TempData["Success"] = "Zmieniono dane sesji.";
                 return RedirectToAction(nameof(Index));
             }
-            catch (DbUpdateConcurrencyException ex)
+            catch (DbUpdateConcurrencyException dce)
             {
-                _logger.LogError(ex, "Concurrency error podczas Edit Sesji Id={Id}", id);
-                if (!await _context.Sesje.AnyAsync(e => e.Id == model.Id && e.UserId == userId))
-                    return NotFound();
+                _logger.LogWarning(dce, "Concurrency error przy edycji sesji Id={Id}", id);
+                if (!await SesjaExistsForUser(id, userId)) return NotFound();
                 throw;
+            }
+            catch (DbUpdateException dbEx)
+            {
+                var inner = dbEx.GetBaseException()?.Message ?? dbEx.Message;
+                _logger.LogError(dbEx, "BÅ‚Ä…d DB przy edycji Sesji: {Message}", inner);
+                ModelState.AddModelError(string.Empty, "BÅ‚Ä…d zapisu: " + inner);
+                return View(model);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "B³¹d przy edycji sesji Id={Id}", id);
-                ModelState.AddModelError(string.Empty, "B³¹d podczas zapisu zmian.");
+                _logger.LogError(ex, "Niezidentyfikowany bÅ‚Ä…d przy edycji Sesji");
+                ModelState.AddModelError(string.Empty, "BÅ‚Ä…d zapisu: " + ex.Message);
                 return View(model);
             }
         }
@@ -156,9 +183,14 @@ namespace BeFit_Kaszkowiak.Controllers
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null) return NotFound();
+
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var sesja = await _context.Sesje.FirstOrDefaultAsync(s => s.Id == id && s.UserId == userId);
+            var sesja = await _context.Sesje
+                .AsNoTracking()
+                .FirstOrDefaultAsync(s => s.Id == id && s.UserId == userId);
+
             if (sesja == null) return NotFound();
+
             return View(sesja);
         }
 
@@ -169,25 +201,34 @@ namespace BeFit_Kaszkowiak.Controllers
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var sesja = await _context.Sesje.FirstOrDefaultAsync(s => s.Id == id && s.UserId == userId);
+
             if (sesja == null) return NotFound();
 
             try
             {
-                // usuñ powi¹zane æwiczenia, jeœli nie masz cascade delete
-                var cwiczenia = _context.Cwiczenia.Where(c => c.SesjaId == sesja.Id);
-                _context.Cwiczenia.RemoveRange(cwiczenia);
-
                 _context.Sesje.Remove(sesja);
                 await _context.SaveChangesAsync();
-                TempData["Success"] = "Usuniêto sesjê.";
+                TempData["Success"] = "Sesja zostaÅ‚a usuniÄ™ta.";
+                return RedirectToAction(nameof(Index));
+            }
+            catch (DbUpdateException dbEx)
+            {
+                var inner = dbEx.GetBaseException()?.Message ?? dbEx.Message;
+                _logger.LogError(dbEx, "BÅ‚Ä…d DB przy usuwaniu Sesji: {Message}", inner);
+                TempData["Error"] = "BÅ‚Ä…d podczas usuwania: " + inner;
                 return RedirectToAction(nameof(Index));
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "B³¹d przy usuwaniu sesji Id={Id}", id);
-                ModelState.AddModelError(string.Empty, "B³¹d przy usuwaniu. Spróbuj ponownie.");
-                return View(sesja);
+                _logger.LogError(ex, "Niezidentyfikowany bÅ‚Ä…d przy usuwaniu Sesji");
+                TempData["Error"] = "BÅ‚Ä…d podczas usuwania: " + ex.Message;
+                return RedirectToAction(nameof(Index));
             }
+        }
+
+        private async Task<bool> SesjaExistsForUser(int id, string userId)
+        {
+            return await _context.Sesje.AnyAsync(s => s.Id == id && s.UserId == userId);
         }
     }
 }

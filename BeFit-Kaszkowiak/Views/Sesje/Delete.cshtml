@@ -9,14 +9,24 @@
 <h4>Czy na pewno chcesz usunąć tę sesję?</h4>
 
 <div>
-    <strong>@Model.Tytul</strong>
-    <p>@Model.Opis</p>
-    <p>Data: @Model.Data.ToString("yyyy-MM-dd")</p>
+    <dl class="row">
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.Tytul)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(m => m.Tytul)</dd>
+
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.DataRozpoczecia)</dt>
+        <dd class="col-sm-9">@Model.DataRozpoczecia.ToString("g")</dd>
+
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.DataZakonczenia)</dt>
+        <dd class="col-sm-9">@((Model.DataZakonczenia.HasValue) ? Model.DataZakonczenia.Value.ToString("g") : "—")</dd>
+
+        <dt class="col-sm-3">@Html.DisplayNameFor(m => m.Opis)</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(m => m.Opis)</dd>
+    </dl>
 </div>
 
 <form asp-action="Delete" method="post">
     @Html.AntiForgeryToken()
     <input type="hidden" asp-for="Id" />
-    <button type="submit" class="btn btn-danger">Usuń</button>
+    <button type="submit" class="btn btn-danger">Tak, usuń</button>
     <a asp-action="Index" class="btn btn-secondary">Anuluj</a>
 </form>

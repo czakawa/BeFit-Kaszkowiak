@@ -1,5 +1,4 @@
 ﻿@model BeFit_Kaszkowiak.Models.Cwiczenie
-@using Microsoft.AspNetCore.Mvc.Rendering
 
 @{
     ViewData["Title"] = "Dodaj ćwiczenie";
@@ -7,48 +6,62 @@
 
 <h1>@ViewData["Title"]</h1>
 
-<div asp-validation-summary="All" class="text-danger"></div>
+<div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
 <form asp-action="Create" method="post">
     @Html.AntiForgeryToken()
 
-    <div class="form-group mb-2">
+    <div class="mb-3">
         <label asp-for="Nazwa" class="form-label"></label>
         <input asp-for="Nazwa" class="form-control" />
         <span asp-validation-for="Nazwa" class="text-danger"></span>
     </div>
 
-    <div class="form-group mb-2">
-        <label asp-for="TypCwiczeniaId" class="form-label"></label>
-        <select asp-for="TypCwiczeniaId" asp-items="@(ViewData["TypCwiczeniaId"] as SelectList)" class="form-control">
-            <option value="">-- wybierz typ --</option>
+    <div class="mb-3">
+        <label asp-for="TypCwiczeniaId" class="form-label">Typ ćwiczenia</label>
+        <select asp-for="TypCwiczeniaId" class="form-select"
+                asp-items="@(ViewData["TypCwiczeniaId"] as SelectList)">
+            <option value="">-- Wybierz typ --</option>
         </select>
         <span asp-validation-for="TypCwiczeniaId" class="text-danger"></span>
     </div>
 
-    <div class="form-group mb-2">
-        <label asp-for="SesjaId" class="form-label"></label>
-        <select asp-for="SesjaId" asp-items="@(ViewData["SesjaId"] as SelectList)" class="form-control">
-            <option value="">-- wybierz sesję --</option>
+    <div class="mb-3">
+        <label asp-for="SesjaId" class="form-label">Sesja</label>
+        <select asp-for="SesjaId" class="form-select" asp-items="@(ViewData["SesjaId"] as SelectList)">
+            <option value="">-- Wybierz sesję --</option>
         </select>
         <span asp-validation-for="SesjaId" class="text-danger"></span>
     </div>
 
-    <div class="form-group mb-2">
-        <label asp-for="CzasTrwaniaSek" class="form-label"></label>
-        <input asp-for="CzasTrwaniaSek" class="form-control" />
+    <div class="mb-3">
+        <label asp-for="CzasTrwaniaSek" class="form-label">Czas trwania (s)</label>
+        <input asp-for="CzasTrwaniaSek" class="form-control" type="number" min="0" />
         <span asp-validation-for="CzasTrwaniaSek" class="text-danger"></span>
     </div>
 
-    <div class="form-group mb-2">
-        <label asp-for="Powtorzenia" class="form-label"></label>
-        <input asp-for="Powtorzenia" class="form-control" />
+    <div class="mb-3">
+        <label asp-for="Powtorzenia" class="form-label">Powtórzenia (na serię)</label>
+        <input asp-for="Powtorzenia" class="form-control" type="number" min="0" />
         <span asp-validation-for="Powtorzenia" class="text-danger"></span>
     </div>
 
-    <div class="form-group mb-3">
-        <label asp-for="Opis" class="form-label"></label>
-        <textarea asp-for="Opis" class="form-control"></textarea>
+    <div class="mb-3">
+        <label asp-for="IloscSerii" class="form-label">Liczba serii</label>
+        <input asp-for="IloscSerii" class="form-control" type="number" min="1" />
+        <span asp-validation-for="IloscSerii" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Obciazenie" class="form-label">Obciążenie (kg)</label>
+        <input asp-for="Obciazenie" class="form-control" type="number" min="0" step="0.5" />
+        <span asp-validation-for="Obciazenie" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Opis" class="form-label">Opis (opcjonalnie)</label>
+        <textarea asp-for="Opis" class="form-control" rows="3"></textarea>
+        <span asp-validation-for="Opis" class="text-danger"></span>
     </div>
 
     <button type="submit" class="btn btn-primary">Zapisz</button>

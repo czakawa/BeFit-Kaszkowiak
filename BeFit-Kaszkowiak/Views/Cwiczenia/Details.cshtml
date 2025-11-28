@@ -7,26 +7,33 @@
 <h1>@ViewData["Title"]</h1>
 
 <dl class="row">
-    <dt class="col-sm-2">Nazwa</dt>
-    <dd class="col-sm-10">@Model.Nazwa</dd>
+    <dt class="col-sm-3">Nazwa</dt>
+    <dd class="col-sm-9">@Model.Nazwa</dd>
 
-    <dt class="col-sm-2">Typ</dt>
-    <dd class="col-sm-10">@Model.TypCwiczenia?.Nazwa</dd>
+    <dt class="col-sm-3">Typ</dt>
+    <dd class="col-sm-9">@Model.TypCwiczenia?.Nazwa</dd>
 
-    <dt class="col-sm-2">Sesja</dt>
-    <dd class="col-sm-10">@Model.Sesja?.Tytul</dd>
+    <dt class="col-sm-3">Sesja</dt>
+    <dd class="col-sm-9">@Model.Sesja?.Tytul</dd>
 
-    <dt class="col-sm-2">Czas (s)</dt>
-    <dd class="col-sm-10">@Model.CzasTrwaniaSek</dd>
+    <dt class="col-sm-3">Czas (s)</dt>
+    <dd class="col-sm-9">@Model.CzasTrwaniaSek</dd>
 
-    <dt class="col-sm-2">Powtórzenia</dt>
-    <dd class="col-sm-10">@Model.Powtorzenia</dd>
+    <dt class="col-sm-3">Powtórzenia</dt>
+    <dd class="col-sm-9">@Model.Powtorzenia</dd>
 
-    <dt class="col-sm-2">Opis</dt>
-    <dd class="col-sm-10">@Model.Opis</dd>
+    <dt class="col-sm-3">Ilość serii</dt>
+    <dd class="col-sm-9">@Model.IloscSerii</dd>
+
+    <dt class="col-sm-3">Obciążenie</dt>
+    <dd class="col-sm-9">@((Model.Obciazenie.HasValue) ? Model.Obciazenie + " kg" : "—")</dd>
+
+    <dt class="col-sm-3">Opis</dt>
+    <dd class="col-sm-9">@Model.Opis</dd>
 </dl>
 
 <p>
     <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary">Edytuj</a>
     <a asp-action="Index" class="btn btn-secondary">Powrót</a>
+    <a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger">Usuń</a>
 </p>

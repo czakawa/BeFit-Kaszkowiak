@@ -6,6 +6,11 @@
 
 <h1>@ViewData["Title"]</h1>
 
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success">@TempData["Success"]</div>
+}
+
 <p>
     <a asp-action="Create" class="btn btn-primary">Dodaj ćwiczenie</a>
 </p>
@@ -18,13 +23,14 @@
             <th>Sesja</th>
             <th>Czas (s)</th>
             <th>Powtórzenia</th>
+            <th>Obciążenie</th>
             <th></th>
         </tr>
     </thead>
     <tbody>
-        @if (!Model?.Any() ?? true)
+        @if (Model == null || !Model.Any())
         {
-            <tr><td colspan="6">Brak rekordów.</td></tr>
+            <tr><td colspan="7">Brak ćwiczeń.</td></tr>
         }
         else
         {
@@ -32,14 +38,15 @@
             {
                 <tr>
                     <td>@item.Nazwa</td>
-                    <td>@item.TypCwiczenia?.Nazwa</td>
-                    <td>@item.Sesja?.Tytul</td>
+                    <td>@(item.TypCwiczenia?.Nazwa ?? "-")</td>
+                    <td>@(item.Sesja?.Tytul ?? "-")</td>
                     <td>@item.CzasTrwaniaSek</td>
                     <td>@item.Powtorzenia</td>
+                    <td>@(item.Obciazenie.HasValue? item.Obciazenie + " kg" : "—")</td>
                     <td>
-                        <a asp-action="Details" asp-route-id="@item.Id">Szczegóły</a> |
-                        <a asp-action="Edit" asp-route-id="@item.Id">Edytuj</a> |
-                        <a asp-action="Delete" asp-route-id="@item.Id">Usuń</a>
+                        <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-outline-primary">Szczegóły</a>
+                        <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-secondary">Edytuj</a>
+                        <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-outline-danger">Usuń</a>
                     </td>
                 </tr>
             }

@@ -1,29 +1,30 @@
-﻿@model IEnumerable<BeFit_Kaszkowiak.Models.ViewModels.StatystykaTypuViewModel>
-
+@model IEnumerable<dynamic>
 @{
-    ViewData["Title"] = "Statystyki";
+    ViewData["Title"] = "Statystyki - ostatnie 4 tygodnie";
 }
 
 <h1>@ViewData["Title"]</h1>
 
-<table class="table table-striped">
+<table class="table">
     <thead>
         <tr>
-            <th>Typ</th>
-            <th>Ilość ćwiczeń</th>
-            <th>Łączny czas (s)</th>
-            <th>Średnie powtórzenia</th>
+            <th>Typ ćwiczenia</th>
+            <th>Ile razy</th>
+            <th>Łącznie powtórzeń</th>
+            <th>Średnie obciążenie</th>
+            <th>Maksymalne obciążenie</th>
         </tr>
     </thead>
     <tbody>
-        @foreach (var r in Model)
-        {
-            <tr>
-                <td>@r.NazwaTypu</td>
-                <td>@r.IloscCwiczen</td>
-                <td>@r.LacznyCzasSek</td>
-                <td>@String.Format("{0:0.##}", r.SredniePowtorzenia)</td>
-            </tr>
-        }
+    @foreach(var s in Model)
+    {
+        <tr>
+            <td>@s.TypNazwa</td>
+            <td>@s.Count</td>
+            <td>@s.TotalPowtorzen</td>
+            <td>@String.Format("{0:0.##}", s.AvgObciazenie)</td>
+            <td>@String.Format("{0:0.##}", s.MaxObciazenie)</td>
+        </tr>
+    }
     </tbody>
 </table>
